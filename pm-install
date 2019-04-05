@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -e
+PM_PREFIX="$(dirname "$0")"
+cd "$PM_PREFIX"
+source pm-config.inc
+
+usage() {
+    echo 'usage: pm-install NAME VERSION'
+}
+
+if [ "$#" -lt 2 ]; then
+    usage
+    exit 2
+fi
+
+SHOULD_SELECT=false
+for param in "$@"; do
+    if [[ $param == --select ]]; then
+        SHOULD_SELECT=true
+    fi
+done
+
+NAME="$1"
+shift
+VERSION="$1"
+shift
+if [ -z "$NAME" ] || [ -z "$VERSION" ]; then
+    usage
+    exit 2
+fi
+export NAME VERSION
+
+MANIFEST="$PM_REPOSITORY/$NAME.sh"
+if ! [ -f "$MANIFEST" ]; then
+    echo "error: package ${NAME} not found"
+    exit 1
+fi
+export MANIFEST
+
+BUILD_DIR="$PM_BUILD_DIR/$NAME-$VERSION"
+CONTENT_DIR="$PM_CONTENT_DIR/$NAME-$VERSION"
+mkdir -pv "$BUILD_DIR" "$CONTENT_DIR"
+export BUILD_DIR CONTENT_DIR
+
+"$PM_PREFIX/pm-helper" "$MANIFEST" download
+"$PM_PREFIX/pm-helper" "$MANIFEST" build
+"$PM_PREFIX/pm-helper" "$MANIFEST" install
+
+SELECTION="$PM_CONTENT_DIR/$NAME"
+if ! [[ -e $SELECTION ]] || $SHOULD_SELECT; then
+    if [[ -e $SELECTION ]] && ! [[ -L $SELECTION ]]; then
+        echo "'$SELECTION' is not a symlink"
+        exit 3
+    fi
+    rm -f "$SELECTION"
+    ln -sf "$CONTENT_DIR" "$SELECTION"
+fi

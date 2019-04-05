@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e
+source pm-config.inc
+if ! [ -f "$1" ]; then
+    echo 'error: manifest not found'
+    exit 1
+fi
+
+cd "$BUILD_DIR"
+source "$1"
+(case "$2" in
+    download) download-phase ;;
+       build)    build-phase ;;
+     install)  install-phase ;;
+           *) echo "unknown phase '$1'" && exit 2
+esac) || echo "error: phase $1 failed"
