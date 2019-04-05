@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
 PM_PREFIX="$(dirname "$0")"
+PM_PREFIX="$(readlink -f "$PM_PREFIX")"
 cd "$PM_PREFIX"
 source pm-config.inc
 
