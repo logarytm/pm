@@ -9,6 +9,17 @@ usage() {
     echo 'usage: pm-install NAME VERSION'
 }
 
+find-manifest() {
+    local name="$1"
+    local manifest
+    manifest="$(find "$PM_REPOSITORY" \
+        -type f \
+        -name "$name.sh" \
+        -print \
+        -quit 2> /dev/null)"
+    MANIFEST="$(readlink -f "$manifest")"
+}
+
 if [ "$#" -lt 2 ]; then
     usage
     exit 2
@@ -31,9 +42,8 @@ if [ -z "$NAME" ] || [ -z "$VERSION" ]; then
 fi
 export NAME VERSION
 
-MANIFEST="$PM_REPOSITORY/$NAME.sh"
-if ! [ -f "$MANIFEST" ]; then
-    echo "error: package ${NAME} not found"
+if ! find-manifest "$NAME"; then
+    echo "error: package '${NAME}' not found"
     exit 1
 fi
 export MANIFEST

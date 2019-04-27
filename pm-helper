@@ -7,10 +7,11 @@ if ! [ -f "$1" ]; then
 fi
 
 cd "$BUILD_DIR"
+# shellcheck source=/dev/null
 source "$1"
 (case "$2" in
     download) download-phase ;;
        build)    build-phase ;;
      install)  install-phase ;;
            *) echo "unknown phase '$1'" && exit 2
-esac) || echo "error: phase $1 failed"
+esac) || echo "error: phase '$2' failed"

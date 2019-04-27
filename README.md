@@ -1,4 +1,4 @@
-![Logo](https://raw.githubusercontent.com/logarytm/pm/master/media/logo.png)
+![Logo](https://raw.githubusercontent.com/logarytm/pm/master/meta/logo.png)
 
 This is a stupid, crude, quick&dirty software installer for Linux. It might
 work on macOS, MSYS, BSD or other systems, but it has not been tested there.
